@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+    {% if pusher_ready %}
+        <form id="chat-form">
+            {% csrf_token %}
+            <input type="text" id="input" class="form-control" placeholder="Type to chat..."/>
+        </form>
+
+        <strong>Messages:</strong>
+        <div id="messages"></div>
+    {% else %}
+        <div class="alert alert-warning">Please add pusher credentials to your settings/local.py</div>
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    <script src="//js.pusher.com/2.2/pusher.min.js"></script>
+    <script>
+        // Enable pusher logging - don't include this in production
+        Pusher.log = function(message) {
+            if (window.console && window.console.log) {
+                window.console.log(message);
+            }
+        };
+
+        var $messages = $('#messages');
+
+        var pusher = new Pusher('{{ PUSHER_KEY }}');
+        var channel = pusher.subscribe('test_channel');
+        channel.bind('my_event', function(data) {
+            var $row = $('<div>').text(data.message);
+            $messages.prepend($row);
+        });
+
+        var SUBMIT_URL = "{% url 'pusher_submit' %}";
+        $('#chat-form').submit(function() {
+            var message = $('#input').val();
+            $.post(SUBMIT_URL, {
+                message: message,
+                // CSRF hack
+                csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
+            });
+            $('#input').val('');
+            return false;
+        });
+    </script>
+{% endblock %}

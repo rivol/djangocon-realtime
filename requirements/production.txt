@@ -1,0 +1,15 @@
+# Pro-tip: Try not to put anything here. There should be no dependency in
+#	production that isn't in development.
+-r base.txt
+
+gunicorn==19.3.0
+
+# The following can also be installed as system packages, from apt-get. But pip approach is recommended.
+# For faster parsing in django-compressor. System package is python-lxml
+lxml==3.4.4
+
+# For PostgreSQL support. System package is python-psycopg2
+psycopg2==2.6
+
+# If you're using memcached (on by default), you need this. Similar system package is python-memcache
+python3-memcached==1.51

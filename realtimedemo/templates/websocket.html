@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+
+{% block content %}
+    <form id="chat-form">
+        {% csrf_token %}
+        <input type="text" id="input" class="form-control" placeholder="Type to chat..."/>
+    </form>
+
+    <strong>Messages:</strong>
+    <div id="messages"></div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'js/$ws.js' %}"></script>
+    <script>
+        var $messages = $('#messages');
+        var WEBSOCKET_URL = '{{ WEBSOCKET_URL }}';
+
+        $ws(WEBSOCKET_URL).ready(function($ws, ws) {
+            // React to incoming messages
+            $ws.on('showMessage', function(data) {
+                var $row = $('<div>').text(data.message);
+                $messages.prepend($row);
+            });
+
+            // And send an initial message
+{#            $ws.emit('showMessage', {#}
+{#                msg: 'WebSockets are fun!',#}
+{#            });#}
+
+            // Also send messages when user submits
+            $('#chat-form').submit(function() {
+                var message = $('#input').val();
+                $ws.emit('showMessage', {
+                    message: message,
+                });
+                $('#input').val('');
+                return false;
+            });
+        });
+
+    </script>
+{% endblock %}

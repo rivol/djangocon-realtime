@@ -1,0 +1,11 @@
+
+*.pyc
+.sass-cache/
+
+venv/
+
+realtimedemo/settings/local.py
+realtimedemo/db.sqlite3
+realtimedemo/assets/
+realtimedemo/media/
+realtimedemo/static/bower_components/
